@@ -7,8 +7,8 @@
 #define NUM_PAGES 5
 
 static struct svm_data svm_array[2] = {
-    { .dsm_id = 1, .svm_id = 1, .ip = "192.168.0.6", .port = 4444 },
-    { .dsm_id = 1, .svm_id = 2, .ip = "192.168.0.7", .port = 4444 }
+    { .dsm_id = 1, .svm_id = 1, .ip = "192.168.4.1", .port = 4444 },
+    { .dsm_id = 1, .svm_id = 2, .ip = "192.168.4.2", .port = 4444 }
 };
 
 static struct unmap_data mr_array[1] = {
@@ -28,7 +28,6 @@ int main()
     int fd, i;
     unsigned long dsm_mem_sz = PAGE_SIZE * 1000;
     int svm_count = sizeof(svm_array) / sizeof(struct svm_data);
-    printf("there are %d svms\n", svm_count);
     int mr_count = sizeof(mr_array) / sizeof(struct unmap_data);
     void *mem = valloc(dsm_mem_sz);
 

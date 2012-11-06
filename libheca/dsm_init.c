@@ -9,6 +9,8 @@ int dsm_register(struct svm_data *local_svm)
     int rc, fd;
    
     fd = open(DSM_CHRDEV, O_RDWR);
+    int optval = 1;
+    setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
     if (fd < 0) {
         DEBUG_ERROR("Could not open DSM_CHRDEV");
         return -1;
@@ -36,6 +38,8 @@ static int get_listening_socket(int client_count)
     struct sockaddr_in serv_addr;
        
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, 4);
     if (sockfd < 0) {
         DEBUG_ERROR("Could not open socket");
         return sockfd;
@@ -231,16 +235,25 @@ int dsm_memory_map(int fd, int mr_count, struct unmap_data *unmap_array,
     for (i = 0; i < mr_count; i++)
     {
         mr = unmap_array[i];
-        mr.unmap = UNMAP_REMOTE;
+        mr.unmap = TRUE;
         j = 0;
         while (mr.svm_ids[j] != 0) {
             if (local_svm_id == mr.svm_ids[j]) {
-                mr.unmap = UNMAP_LOCAL;
+                mr.unmap = FALSE;
                 break;
             }
             j++;
         }
         DEBUG_PRINT("DSM_MR system call\n");
+        DEBUG_PRINT("STEVE: unmap data = { dsm_id = %d, addr = %llu, sz = %lu, id = %d, unmap = %d\n svm_ids = { ",
+                mr.dsm_id, (unsigned long long) mr.addr,  mr.sz, mr.id, mr.unmap);
+        j = 0;
+        while (mr.svm_ids[j] != 0) {
+            printf("%d ", mr.svm_ids[j]);
+            j++;
+        }
+        printf(" } }\n");
+
         rc = ioctl(fd, DSM_MR, &mr);
         if (rc < 0) {
             DEBUG_ERROR("DSM_MR");
@@ -257,6 +270,8 @@ int dsm_clients_memory_map(int svm_count, int mr_count,
 {
     int i, client_count, n, ack_sig;
     client_count = svm_count - 1;
+    
+    DEBUG_PRINT("Setting up clients memory mapping\n");
 
     for (i = 0; i < client_count; i++) {
 
