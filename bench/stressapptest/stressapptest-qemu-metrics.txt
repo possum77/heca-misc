@@ -1,0 +1,56 @@
+FPM with Stressapptest      1G : 701534089ns
+45 Migration start
+318027 sending ram header
+4093136 0 1052768
+4096018 sending ram header finished
+4096699 start iterating
+5360902 0 1052768
+5491095 done iterating and sending the rest
+6884770 0 1052768
+8067704 0 1052768
+1250453338 Migration end
+
+HPM 10s with Stressapptest  1G : 
+71 Migration start
+320996 sending ram header
+6111357 sending ram header finished
+6116802 start iterating
+10036069638 326066852 302050
+10036258946 done iterating and sending the rest
+10037914305 326066852 302050
+10038909368 326066852 302050
+10218278126 Migration end 
+
+HPM 20s with Stressapptest  1G : 
+46 Migration start
+495880 sending ram header
+5672560 sending ram header finished
+5678287 start iterating
+20002546226 710758504 300041
+20002701158 done iterating and sending the rest
+20004009647 710758504 300041
+20005003835 710758504 300041
+20179820596 Migration end
+
+HPM 40s with Stressapptest  1G : 
+66 Migration start
+265823 sending ram header
+5925087 sending ram header finished
+5930856 start iterating
+40010023139 1437624832 258906
+40010274654 done iterating and sending the rest
+40012048423 1437624832 258906
+40013044959 1437624832 258906
+40159815257 Migration end
+
+HPM 80s with Stressapptest  1G : 
+49 Migration start
+498160 sending ram header
+6309427 sending ram header finished
+6316391 start iterating
+80029051619 2898452853 153476
+80029437601 done iterating and sending the rest
+80030814844 2898452853 153476
+80031979898 2898452853 153476
+80119939317 Migration end 
+
