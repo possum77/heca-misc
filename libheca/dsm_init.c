@@ -245,15 +245,6 @@ int dsm_memory_map(int fd, int mr_count, struct unmap_data *unmap_array,
             j++;
         }
         DEBUG_PRINT("DSM_MR system call\n");
-        DEBUG_PRINT("STEVE: unmap data = { dsm_id = %d, addr = %llu, sz = %lu, id = %d, unmap = %d\n svm_ids = { ",
-                mr.dsm_id, (unsigned long long) mr.addr,  mr.sz, mr.id, mr.unmap);
-        j = 0;
-        while (mr.svm_ids[j] != 0) {
-            printf("%d ", mr.svm_ids[j]);
-            j++;
-        }
-        printf(" } }\n");
-
         rc = ioctl(fd, DSM_MR, &mr);
         if (rc < 0) {
             DEBUG_ERROR("DSM_MR");
