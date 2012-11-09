@@ -71,7 +71,7 @@ int dsm_clients_connect(int svm_count, struct svm_data *svm_array,
         struct client_connect_info *clients);
 
 int dsm_memory_map(int fd, int mr_count, struct unmap_data *unmap_array,
-        int local_svm_id);
+        int local_svm_id, int auto_unmap);
 
 int dsm_clients_memory_map(int svm_count, int mr_count,
         struct unmap_data *unmap_array, struct client_connect_info *clients);

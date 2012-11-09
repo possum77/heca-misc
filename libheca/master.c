@@ -40,7 +40,7 @@ int main()
     mr_array[0].addr = mem;
     mr_array[0].sz = dsm_mem_sz;
 
-    fd = dsm_master_init(svm_count, svm_array, mr_count, mr_array);
+    fd = dsm_master_init(svm_count, svm_array, mr_count, mr_array, AUTO_UNMAP);
     if (fd < 0) {
         printf("Error initializing master node\n");
         exit(1);

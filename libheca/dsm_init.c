@@ -227,7 +227,7 @@ int dsm_client_assign_mem(void *dsm_mem, unsigned long dsm_mem_sz, int mr_count,
 
 /* register memory regions, unmap to remotes if needed */
 int dsm_memory_map(int fd, int mr_count, struct unmap_data *unmap_array,
-        int local_svm_id)
+        int local_svm_id, int auto_unmap)
 {
     int i, j, rc = 0;
     struct unmap_data mr;
@@ -235,7 +235,11 @@ int dsm_memory_map(int fd, int mr_count, struct unmap_data *unmap_array,
     for (i = 0; i < mr_count; i++)
     {
         mr = unmap_array[i];
-        mr.unmap = TRUE;
+        if (auto_unmap)
+            mr.unmap = TRUE;
+        else
+            mr.unmap = FALSE;
+
         j = 0;
         while (mr.svm_ids[j] != 0) {
             if (local_svm_id == mr.svm_ids[j]) {

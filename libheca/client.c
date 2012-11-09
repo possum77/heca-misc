@@ -40,7 +40,7 @@ int main(int argc, char** argv)
     master_addr.sin_addr.s_addr = inet_addr(master_ip);
     
     // dsm init
-    fd = dsm_client_init (dsm_mem, dsm_mem_sz, local_svm_id, &master_addr);
+    fd = dsm_client_init (dsm_mem, dsm_mem_sz, local_svm_id, &master_addr, AUTO_UNMAP);
     if (fd < 0 ) {
         printf("Error initializing client node\n");
         exit(1);

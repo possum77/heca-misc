@@ -5,44 +5,36 @@
 #include "libheca.h"
 
 int dsm_master_init(int svm_count, struct svm_data *svm_array, int mr_count,
-    struct unmap_data *mr_array)
+    struct unmap_data *mr_array, int auto_unmap)
 {
     int fd, ret;
     struct svm_data *local_svm;
     struct client_connect_info *clients = NULL;
 
-    printf("set local flag on svm data\n");
     local_svm = dsm_local_svm_array_init(svm_count, svm_array, MASTER_SVM_ID);
     clients = calloc(svm_count-1, sizeof(struct client_connect_info));
-    printf("Wait for clients to connect\n");
     clients_sockets_init(svm_count, clients);
 
-    printf("Register local svm\n");
     fd = dsm_register(local_svm);
     if ( fd  < 0 )
         goto return_error;
     
-    printf("Get clients to register their local svm\n");
     ret = dsm_clients_register(svm_count, svm_array, clients);
     if ( ret < 0)
         goto return_error;
     
-    printf("connect to dsm\n");
     ret = dsm_connect(fd, MASTER_SVM_ID, svm_count, svm_array); 
     if ( ret < 0)
         goto return_error;
     
-    printf("get clients to connect to dsm\n");
     ret = dsm_clients_connect(svm_count, svm_array, clients);
     if ( ret < 0)
         goto return_error;
 
-    printf("register memory regions\n");
-    ret = dsm_memory_map(fd, mr_count, mr_array, MASTER_SVM_ID); 
+    ret = dsm_memory_map(fd, mr_count, mr_array, MASTER_SVM_ID, auto_unmap); 
     if ( ret < 0)
         goto return_error;
 
-    printf("get clients to register memory regions\n");
     ret = dsm_clients_memory_map(svm_count, mr_count, mr_array, clients); 
     if ( ret < 0)
         goto return_error;
@@ -57,7 +49,7 @@ return_error:
 }
 
 int dsm_client_init(void *dsm_mem, unsigned long dsm_mem_sz, int local_svm_id,
-        struct sockaddr_in *master_addr)
+        struct sockaddr_in *master_addr, int auto_unmap)
 {
     int sock, svm_count, fd, ret, mr_count;
     struct svm_data *local_svm;
@@ -65,44 +57,36 @@ int dsm_client_init(void *dsm_mem, unsigned long dsm_mem_sz, int local_svm_id,
     struct unmap_data *mr_array;
 
     /* initial handshake, receive cluster data */
-    printf("connect to master\n");
     sock = dsm_master_connect(master_addr, local_svm_id);
     if ( sock < 0)
         goto return_error;
 
-    printf("get svm count\n");
     ret = dsm_svm_count_recv(sock, &svm_count); 
     if ( ret < 0)
         goto return_error;
 
     svm_array = calloc(svm_count, sizeof(struct svm_data));
 
-    printf("get svm array\n");
     ret = dsm_svm_array_recv(sock, svm_count, svm_array);
     if ( ret < 0)
         goto return_error;
 
-    printf("set local flag on svm data\n");
     local_svm = dsm_local_svm_array_init(svm_count, svm_array, local_svm_id);
 
     /* registration and connection */
-    printf("register dsm locally\n");
     fd = dsm_register(local_svm); 
     if ( fd < 0)
         goto return_error;
 
-    printf("tell master\n");
     ret = dsm_client_registered(sock); 
     if ( ret < 0)
         goto return_error;
 
-    printf("connect to dsm\n");
     ret = dsm_client_connect(sock, fd, local_svm_id, svm_count, svm_array); 
     if ( ret < 0)
         goto return_error;
 
     /* memory regions */
-    printf("get unmap array\n");
     ret = dsm_mr_count_recv(sock, &mr_count); 
     if ( ret < 0)
         goto return_error;
@@ -112,13 +96,11 @@ int dsm_client_init(void *dsm_mem, unsigned long dsm_mem_sz, int local_svm_id,
     if ( ret < 0)
         goto return_error;
 
-    printf("setup client memory regions\n");
     ret = dsm_client_assign_mem(dsm_mem, dsm_mem_sz, mr_count, mr_array); 
     if ( ret < 0)
         goto return_error;
 
-    printf("register memory regions\n");
-    ret = dsm_memory_map(fd, mr_count, mr_array, local_svm_id); 
+    ret = dsm_memory_map(fd, mr_count, mr_array, local_svm_id, auto_unmap); 
     if ( ret < 0)
         goto return_error;
 
