@@ -1,0 +1,10 @@
+UNAME=`uname -o`
+TEXLIVE_DIR=/usr/local/texlive/2012/
+if [ "$UNAME" == "Cygwin" ]; then
+	TEXLIVE_PATH=$TEXLIVE_DIR/bin/i386-cygwin/
+else
+	TEXLIVE_PATH=$TEXLIVE_DIR/bin/x86_64-linux/
+fi
+export PATH=$TEXLIVE_PATH:$PATH
+
+
