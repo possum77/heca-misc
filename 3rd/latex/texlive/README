@@ -1,0 +1,12 @@
+
+=========================
+texlive post installation
+=========================
+
+After installation please comment out:
+
+/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/hyperref.sty:
+	\DeclateLocalOptions{%
+		a4paper,ap5paper,b5paper,letterpaper,legalpaper,executivepaper%
+	}%
+
