@@ -111,8 +111,8 @@ static void compute(char *conf_name)
 static void print_usage(void)
 {
     printf("usage:\n"
-            "{compute:} ./tst [config file name] "
-            "{provide:} ./tst [config file name] [id]");
+            "{compute:} ./tst [config file name] \n"
+            "{provide:} ./tst [config file name] [id]\n");
 }
 
 int main(int argc, char **argv)

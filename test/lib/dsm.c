@@ -30,7 +30,7 @@ int init_cvm(struct CONF *conf, struct unmap_data *mr_array, int mr_count)
         }
     }
 
-    return dsm_master_init(svm_count, svm_array, mr_count, mr_array);
+    return dsm_master_init(svm_count, svm_array, mr_count, mr_array, AUTO_UNMAP);
 }
 
 /* prepare a master address and connect to it */
@@ -48,6 +48,6 @@ int init_mvm(unsigned long sz, void *mem, struct CONF *conf, int mvm_id)
     master_addr.sin_port = htons(4445);
     master_addr.sin_addr.s_addr = inet_addr(cvm.ip);
 
-    return dsm_client_init(mem, sz, mvm_id, &master_addr);
+    return dsm_client_init(mem, sz, mvm_id, &master_addr, AUTO_UNMAP);
 }
 
