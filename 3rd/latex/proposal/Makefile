@@ -2,7 +2,21 @@ include ../Makefile.conf
 
 TARGET_DIR := /usr/local/texlive/proposal
 
-all: macros prop install
+all: macros prop
+
+.PHONY: all
+
+macros: macros_download macros_install
+
+.PHONY: macros
+
+prop: prop_download prop_install
+
+.PHONY: prop
+
+clean: macros_clean prop_clean
+
+.PHONY: clean
 
 MACROS_FILES := \
 	forCTAN/ed/ed.sty \
