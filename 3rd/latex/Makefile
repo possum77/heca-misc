@@ -1,4 +1,4 @@
-include Makefile.conf
+include ../Makefile.conf
 
 PKGS := \
 	subversion \

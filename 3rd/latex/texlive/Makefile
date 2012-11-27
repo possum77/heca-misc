@@ -1,4 +1,4 @@
-include ../Makefile.conf
+include ../../Makefile.conf
 
 TLV_VER := 2012
 TLV_DIR := texlive$(TLV_VER)

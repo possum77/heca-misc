@@ -1,4 +1,4 @@
-TEXMF = ~/texmf/tex/latex
+include ../../Makefile.conf
 
 all:
 	wget http://www.sigplan.org/sigplanconf.cls
