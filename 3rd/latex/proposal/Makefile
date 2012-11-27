@@ -1,4 +1,4 @@
-include ../Makefile.conf
+include ../../Makefile.conf
 
 TARGET_DIR := /usr/local/texlive/proposal
 

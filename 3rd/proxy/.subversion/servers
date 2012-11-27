@@ -1,0 +1,5 @@
+[global]
+http-proxy-host = proxy
+http-proxy-port = 8080
+https-proxy-host = proxy
+https-proxy-port = 8080
