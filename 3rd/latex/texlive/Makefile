@@ -9,8 +9,8 @@ all: download extract install
 .PHONY: all
 
 download: 
-	[ -f $(TLV_VER) ]
-	wget http://ftp.gwdg.de/pub/ctan/systems/texlive/Images/$(TLV_ISO)
+	[ -f $(TLV_VER) ] || \
+		wget http://ftp.gwdg.de/pub/ctan/systems/texlive/Images/$(TLV_ISO)
 
 .PHONY: download
 
