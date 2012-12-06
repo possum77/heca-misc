@@ -50,7 +50,7 @@ macros_install: uninstall
 	mkdir -p $(TEXMF)
 	cd macros && install $(MACROS_FILES) $(TEXMF)
 	mkdir -p $(TARGET_DIR)
-	cp -ar macros/forCTAN/proposal $(TARGET_DIR)
+	cp -ar macros/forCTAN/proposal/* $(TARGET_DIR)
 
 .PHONY: macros_install
 
