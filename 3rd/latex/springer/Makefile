@@ -1,6 +1,6 @@
 include ../../Makefile.conf
 
-all: llncs2e typeinst
+all: clean llncs2e typeinst
 
 llncs2e:
 	mkdir -p $(TEXMF)
@@ -16,7 +16,6 @@ CLEAN += llncs2e*
 typeinst:
 	wget ftp://ftp.springer.de/pub/tex/latex/llncs/latex2e/instruct/authors/typeinst.zip
 	unzip -d typeinst typeinst.zip
-	cd typeinst && pdflatex typeinst.tex
 
 .PHONY: typeinst
 
