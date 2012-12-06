@@ -76,9 +76,13 @@ PROP_FILES := \
 
 prop_install:
 	mkdir -p $(TEXMF)
-	cd $(PROP_DIR) && install $(PROP_FILES) $(TEXMF)
 	mkdir -p $(TARGET_DIR)
-	cd $(PROP_DIR) && install -D $(PROP_FILES) $(TARGET_DIR)
+	for i in $(PROP_FILES); do \
+		install $(PROP_DIR)/$$i $(TEXMF); \
+		DIR=`dirname $$i`; \
+		mkdir -p $(TARGET_DIR)/$$DIR; \
+		cp -ar $(PROP_DIR)/$$i $(TARGET_DIR)/$$i; \
+	done
 
 .PHONY: prop_install
 
