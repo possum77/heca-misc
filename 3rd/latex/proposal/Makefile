@@ -61,6 +61,7 @@ PROP_URL := http://www.tex.ac.uk/CTAN/macros/latex/contrib/$(PROP_ZIP)
 prop_download: prop_clean
 	$(WGET) $(PROP_URL)
 	unzip $(PROP_ZIP)
+	patch -p0 < $(PROP_DIR).patch
 
 .PHONY: prop_download
 

@@ -1,0 +1,15 @@
+diff -r -u proposal/eu/euproposal.cls proposal2/eu/euproposal.cls
+--- proposal/eu/euproposal.cls	2012-01-29 07:05:42.000000000 +0200
++++ proposal2/eu/euproposal.cls	2012-12-16 23:18:49.580424500 +0200
+@@ -67,9 +67,8 @@
+ \newenvironment{sitedescription}[2][]{\def\@test{#1}%
+ \begin{wrapfigure}{r}{5.4cm}\vspace{-2.5ex}%
+ \begin{tabular}{|p{5cm}|}\hline\vspace{1mm}%
+-\ifx\@test\@empty%
+-\wa@institution@logo[height=1.3cm]{#2}\else%
+-\wa@institution@logo[#1]{#2}\fi\\[1ex]%
++\includegraphics[height=1.3cm]{fig/#2.png}%
++\\[1ex]%
+ \textbf{\wa@ref{institution}{#2}{type}.\hfill \wa@ref{institution}{#2}{country}}\\%
+ \small\wa@ref{institution}{#2}{streetaddress}, \wa@ref{institution}{#2}{townzip}\\\hline%
+ \end{tabular}\vspace{-2.5ex}%
