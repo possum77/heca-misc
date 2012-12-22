@@ -58,6 +58,11 @@ PROP_DIR := proposal
 PROP_ZIP := $(PROP_DIR).zip
 PROP_URL := http://www.tex.ac.uk/CTAN/macros/latex/contrib/$(PROP_ZIP)
 
+prop_diff:
+	diff -u -r $(PROP_DIR) $(PROP_DIR).new > $(PROP_DIR).patch || true
+
+.PHONY: prop_diff
+
 prop_download: prop_clean
 	$(WGET) $(PROP_URL)
 	unzip $(PROP_ZIP)
