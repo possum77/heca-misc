@@ -6,9 +6,28 @@ else
 MYHOME=${HOME}
 endif
 
+BINDIR=${HOME}/bin
+
+help:
+	echo "type make [all|clean|proxy|ooo]"
+
+.PHONY: help
+
+all:
+	rm -rf connect.c
+	wget http://savannah.gnu.org/maintenance/connect.c
+	gcc -o $@ connect.c
+	install $@ $(BINDIR)
+
+.PHONY: all
+
+CLEAN += connect connect.c
+
 proxy: proxy_ssh proxy_bash proxy_svn
+	@echo "git clone git@ssh.github.com/hecatonchire/orbit"
 
 ooo: ooo_ssh ooo_bash ooo_svn
+	@echo "git clone git@github.com/hecatonchire/orbit"
 
 proxy_ssh:
 	cp .ssh/config $(MYHOME)/.ssh/config
@@ -33,7 +52,7 @@ ooo_svn:
 proxy_bash: 
 	cp .bash_proxy ~/.
 	echo "source ~/.bash_proxy" >> ~/.bash_profile
-	echo "** Please type 'source ~/.bash_proxy' **"
+	@echo "** Please type 'source ~/.bash_proxy' **"
 
 .PHONY: proxy_bash
 
@@ -42,4 +61,9 @@ ooo_bash:
 	touch ~/.bash_proxy
 
 .PHONY: ooo_bash
+
+clean:
+	rm -rf $(CLEAN)
+
+.PHONY: clean
 
