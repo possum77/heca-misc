@@ -24,10 +24,10 @@ all:
 CLEAN += connect connect.c
 
 proxy: proxy_ssh proxy_bash proxy_svn
-	@echo "git clone git@ssh.github.com/hecatonchire/orbit"
+	@echo "git clone ssh://git@ssh.github.com/hecatonchire/orbit"
 
 ooo: ooo_ssh ooo_bash ooo_svn
-	@echo "git clone git@github.com/hecatonchire/orbit"
+	@echo "git clone ssh://git@github.com/hecatonchire/orbit"
 
 proxy_ssh:
 	cp .ssh/config $(MYHOME)/.ssh/config
