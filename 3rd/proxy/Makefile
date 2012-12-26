@@ -15,6 +15,7 @@ help:
 
 all:
 	rm -rf connect.c
+	mkdir -p $(BINDIR)
 	wget http://savannah.gnu.org/maintenance/connect.c
 	gcc -o connect connect.c
 	install connect $(BINDIR)
