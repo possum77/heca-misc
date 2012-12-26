@@ -25,12 +25,13 @@ all:
 CLEAN += connect connect.c
 
 proxy: proxy_ssh proxy_bash proxy_svn
-	@echo "git clone ssh://git@ssh.github.com/hecatonchire/orbit"
+	@echo "Use GIT URL: ssh://git@ssh.github.com/hecatonchire/orbit"
 
 ooo: ooo_ssh ooo_bash ooo_svn
-	@echo "git clone ssh://git@github.com/hecatonchire/orbit"
+	@echo "Use GIT URL: ssh://git@github.com/hecatonchire/orbit"
 
 proxy_ssh:
+	mkdir -p $(MYHOME)/.ssh
 	cp .ssh/config $(MYHOME)/.ssh/config
 
 .PHONY: proxy_ssh
@@ -41,6 +42,7 @@ ooo_ssh:
 .PHONY: ooo_ssh
 
 proxy_svn:
+	mkdir -p $(MYHOME)/.subversion
 	cp .subversion/servers $(MYHOME)/.subversion/servers
 
 .PHONY: proxy_svn
@@ -51,15 +53,15 @@ ooo_svn:
 .PHONY: ooo_svn
 
 proxy_bash: 
-	cp .bash_proxy ~/.
-	echo "source ~/.bash_proxy" >> ~/.bash_profile
-	@echo "** Please type 'source ~/.bash_proxy' **"
+	cp .bash_proxy $(MYHOME)/
+	echo "source ~/.bash_proxy" >> $(MYHOME)/.bash_profile
+	@echo "** Please type 'source $(MYHOME)/.bash_proxy' **"
 
 .PHONY: proxy_bash
 
 ooo_bash:
-	rm -rf ~/.bash_proxy
-	touch ~/.bash_proxy
+	rm -rf $(MYHOME)/.bash_proxy
+	touch $(MYHOME)/.bash_proxy
 
 .PHONY: ooo_bash
 
