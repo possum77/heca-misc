@@ -16,8 +16,8 @@ help:
 all:
 	rm -rf connect.c
 	wget http://savannah.gnu.org/maintenance/connect.c
-	gcc -o $@ connect.c
-	install $@ $(BINDIR)
+	gcc -o connect connect.c
+	install connect $(BINDIR)
 
 .PHONY: all
 
