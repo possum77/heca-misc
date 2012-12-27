@@ -1,5 +1,7 @@
 include ../../Makefile.conf
 
+CP := cp -r
+
 TARGET_DIR := /usr/local/texlive/proposal
 
 all: macros prop
@@ -50,7 +52,7 @@ macros_install: uninstall
 	mkdir -p $(TEXMF)
 	cd macros && install $(MACROS_FILES) $(TEXMF)
 	mkdir -p $(TARGET_DIR)
-	cp -ar macros/forCTAN/proposal/* $(TARGET_DIR)
+	$(CP) macros/forCTAN/proposal/* $(TARGET_DIR)
 
 .PHONY: macros_install
 
@@ -87,7 +89,7 @@ prop_install:
 		install $(PROP_DIR)/$$i $(TEXMF); \
 		DIR=`dirname $$i`; \
 		mkdir -p $(TARGET_DIR)/$$DIR; \
-		cp -ar $(PROP_DIR)/$$i $(TARGET_DIR)/$$i; \
+		$(CP) $(PROP_DIR)/$$i $(TARGET_DIR)/$$i; \
 	done
 
 .PHONY: prop_install
