@@ -2,6 +2,7 @@ include ../Makefile.conf
 
 PKGS := \
 	subversion \
+	p7zip-full \
 
 all: env-$(UNAME)
 	for s in $(SUBDIRS); do \
