@@ -42,6 +42,7 @@ macros_download: macros_clean
 .PHONY: macros_download
 
 macros_clean:
+	chmod a+w macros
 	rm -rf macros
 
 .PHONY: macros_clean
@@ -71,6 +72,7 @@ prop_download: prop_clean
 .PHONY: prop_download
 
 prop_clean:
+	chmod a+w $(PROP_DIR) $(PROP_ZIP)
 	rm -rf $(PROP_DIR) $(PROP_ZIP)
 
 .PHONY: prop_clean
