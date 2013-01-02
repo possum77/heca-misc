@@ -24,6 +24,7 @@ env-Cygwin:
 SUBDIRS := \
 	texlive \
 	proposal \
+	makeglossaries \
 	gnuplot \
 	sigplanconf \
 

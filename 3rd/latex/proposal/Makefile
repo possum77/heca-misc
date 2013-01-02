@@ -1,7 +1,5 @@
 include ../../Makefile.conf
 
-CP := cp -r
-
 TARGET_DIR ?= /usr/local/texlive/proposal
 
 all: macros prop
