@@ -1,272 +1,198 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <link rel="stylesheet" type="text/css" href="stylesheets/reset.css" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/main.css" />
-    <title>The Hecatonchire Project</title>
-    <script type="text/javascript" src="javascripts/google.js"></script>
-</head>
-<body>
-    <div id="container">
-        <div id="header">
-            <div id="banner">
-                <img src="images/logo2.png" style="width:80px; float:left;"/>
-                <div> <h1>The Hecatonchire Project</h1>
-                      <h2>- scaling many to one</h2> </div>
-            </div>
-        </div>
-        <div id="menubar">
-            <div id="mainmenu">
-               <ul>
-                  <li><a href="index.html">Home</a></li>
-                  <li><a class="current" href="started.html">Getting Started</a></li>
-                  <li><a href="https://github.com/hecatonchire/hecatonchire.github.com/wiki">Docs</a></li>
-                  <li><a href="download.html">Downloads</a></li>
-                  <li><a href="research.html">Research</a></li>
-                  <li><a href="about.html">About us</a></li>
-                  <li><a href="faq.html">FAQ</a></li>
-               </ul>
-               <br style="clear:left"/>
-            </div>
-        </div>
-        <div id="mainframe">
-            <div id="maincontent">
+# Building on the Build Host
 
-<h1>Building on the Build Host</h1>
+This sequence was tested on Ubuntu 11.0, using root permissions
 
-<p>This sequence was tested on Ubuntu 11.0, using root permissions</p>
+## Setup environment
 
-<h2>Setup environment</h2>
+First setup GIT:
 
-<p>First setup GIT:</p>
-
-<div class='command'>
     apt-get install git-core
-</div>
 
-<p>Setup kernel build environment:<p>
+Setup kernel build environment:
 
-<div class='command'>
-    apt-get install build-essential<br>
+    apt-get install build-essential
+
     apt-get install libncurses5 libncurses5-dev
-</div>
 
-<p>Setup initrd.img related tools:<p>
+Setup initrd.img related tools:
 
-<div class='command'>
-     apt-get install multipath-tools kpartx arping dracut
- </div>
+    apt-get install multipath-tools kpartx arping dracut
 
-<p>We export Build hosts' root directory via NFS, to be later used by Target
-hosts</p>
+We export Build hosts' root directory via NFS, to be later used by Target
+hosts
 
-<p>First install NFS server package:<p>
+First install NFS server package:
 
-<div class='command'>
-    apt-get install nfs-kernel-server<br>
+    apt-get install nfs-kernel-server
+
     chkconfig nfsserver on
-</div>
 
-<p>Export / directory by adding the below to /etc/exports:<p>
+Export / directory by adding the below to /etc/exports:
 
-<div class='command'>
-/ *(rw)  
-</div>
+    / *(rw)
 
-<p>Refresh the NFS server</p>
+Refresh the NFS server
 
-<div class='command'>
     service nfs-kernel-server restart
-</div>
 
-<h2>Building the kernel</h2>
+## Building the kernel
 
-<p>
-First download the 
-<a href="https://github.com/hecatonchire/linux-heca">linux-heca repository</a>
-from github, using:
-</p>
+First download the [linux-heca repository](https://github.com/hecatonchire
+/linux-heca) from github, using:
 
-<div class='command'>
     git clone http://github.com/hecatonchire/linux-heca.git
-</div>
 
-<p> An optional (but recommended) step is to download the .config file from the following URL into the linux-heca folder to make the kernel installation procedure a bit easier.</p> 
+An optional (but recommended) step is to download the .config file from the
+following URL into the linux-heca folder to make the kernel installation
+procedure a bit easier.
 
-<div class='command'>
     wget https://raw.github.com/hecatonchire/heca-misc/master/kernel/.config
-</div>
 
-<p>Inside the linux-heca directory, to build the kernel, first run make
-menuconfig. Select any additional kernel modules to install as required.</p>
+Inside the linux-heca directory, to build the kernel, first run make
+menuconfig. Select any additional kernel modules to install as required.
 
-<div class='command'>
     make menuconfig
-</div>
 
-<p>Make sure you have enough free space on the disk (minimum of 20 GBs)</p>
-<div class='command'>
+Make sure you have enough free space on the disk (minimum of 20 GBs)
+
     df -h .
-</div>
 
-<p>Invoke a parallel kernel build using all cores</p>
+Invoke a parallel kernel build using all cores
 
-<div class='command'>
-    make -j`nproc`<br>
+    make -j`nproc`
+
     make -j`nproc` modules
-</div>
 
-<h1>Execution on the Target Host</h1>
+# Execution on the Target Host
 
-<p>This sequence was tested on Ubuntu 10.10, using root permissions</p>
+This sequence was tested on Ubuntu 10.10, using root permissions
 
-<h2>Setup environment</h2>
+## Setup environment
 
-<p>First setup GIT:</p>
+First setup GIT:
 
-<div class='command'>
     apt-get install git-core
-</div>
 
-<p>Setup kernel debug environment:<p>
+Setup kernel debug environment:
 
-<div class='command'>
-    apt-get install fakeroot build-essential crash kexec-tools<br>
-    apt-get install makedumpfile kernel-wedge<br>
+    apt-get install fakeroot build-essential crash kexec-tools
+
+    apt-get install makedumpfile kernel-wedge
+
     apt-get install libncurses5 libncurses5-dev libelf-dev binutils-dev
-</div>
 
-<p>Add RDMA packages:<p>
+Add RDMA packages:
 
-<div class='command'>
-    apt-get install libibverbs1 libibcm1 libibcm-dev<br>
-    apt-get install libibverbs-dev  libibcommon1 ibverbs-utils
-</div>
+    apt-get install libibverbs1 libibcm1 libibcm-dev
 
-<p>Setup permissions to access RDMA/IB devices by ensuring that file
-/etc/udev/rules.d/40-ib.rules has at-least the following lines:<p>
+    apt-get install libibverbs-dev libibcommon1 ibverbs-utils
 
-<div class='command'>
-KERNEL=="umad*", NAME="infiniband/%k"<br>
-KERNEL=="issm*", NAME="infiniband/%k"<br>
-KERNEL=="ucm*", NAME="infiniband/%k", MODE="0666"<br>
-KERNEL=="uverbs*", NAME="infiniband/%k", MODE="0666"<br>
-KERNEL=="uat", NAME="infiniband/%k", MODE="0666"<br>
-KERNEL=="ucma", NAME="infiniband/%k", MODE="0666"<br>
-KERNEL=="rdma_cm", NAME="infiniband/%k", MODE="0666"<br>
-</div>
+Setup permissions to access RDMA/IB devices by ensuring that file
+/etc/udev/rules.d/40-ib.rules has at-least the following lines:
 
-<p>Setup NFS access to the Build hosts' root directory</p>
+    KERNEL=="umad*", NAME="infiniband/%k"
 
-<div class='command'>
-    mkdir -p /mount/builder<br>
-    mount -t nfs builder:/ /mount/builder<br>
-    cd /mount/builder<br>
-</div>
+    KERNEL=="issm*", NAME="infiniband/%k"
 
-<h2>Installing the kernel</h2>
+    KERNEL=="ucm*", NAME="infiniband/%k", MODE="0666"
 
-<p>To install the kernel, execute the following commands (in the kernel build
-directory):</p>
+    KERNEL=="uverbs*", NAME="infiniband/%k", MODE="0666"
 
-<div class='command'>
-    make install<br>
-    make modules_install<br>
+    KERNEL=="uat", NAME="infiniband/%k", MODE="0666"
+
+    KERNEL=="ucma", NAME="infiniband/%k", MODE="0666"
+
+    KERNEL=="rdma_cm", NAME="infiniband/%k", MODE="0666"
+
+Setup NFS access to the Build hosts' root directory
+
+    mkdir -p /mount/builder
+
+    mount -t nfs builder:/ /mount/builder
+
+    cd /mount/builder
+
+## Installing the kernel
+
+To install the kernel, execute the following commands (in the kernel build
+directory):
+
+    make install
+
+    make modules_install
+
     make headers_install
-</div>
 
-<p>Create new init-RAM-disk:</p>
+Create new init-RAM-disk:
 
-<div class='command'>
-    rm -f /boot/initrd.img-`make kernelrelease`<br>
-    dracut -l -f /boot/initrd.img-`make kernelrelease`<br>
+    rm -f /boot/initrd.img-`make kernelrelease`
+
+    dracut -l -f /boot/initrd.img-`make kernelrelease`
+
     lsinitramfs /boot/initrd.img-`make kernelrelease`
-</div>
 
-<p>Refresh GRUB bootloader entries:</p>
+Refresh GRUB bootloader entries:
 
-<div class='command'>
     update-grub2
-</div>
 
-<p>Next, reboot the machine and boot into the new kernel.</p>
+Next, reboot the machine and boot into the new kernel.
 
-<p>You will now need to setup the rdma modules. Run the following commands (or
-add them to /etc/rc.local):</p>
+You will now need to setup the rdma modules. Run the following commands (or
+add them to /etc/rc.local):
 
-<div class='command'>
-    modprobe rdma_cm<br>
-    modprobe ib_uverbs<br>
+    modprobe rdma_cm
+
+    modprobe ib_uverbs
+
     modprobe rdma_ucm
-</div>
 
-<p>To use with soft iWARP (requires no special RDMA configuration), load the
-siw module</p>
+To use with soft iWARP (requires no special RDMA configuration), load the siw
+module
 
-<div class='command'>
     modprobe siw
-</div>
 
-<p>NOTE: if you have NICs/HBAs that support RDMA (Infiniband, Iwarp, RoCE, etc..) you will need to configure them so they can be used with rdmacm and libibverbs</p>
+NOTE: if you have NICs/HBAs that support RDMA (Infiniband, Iwarp, RoCE, etc..)
+you will need to configure them so they can be used with rdmacm and libibverbs
 
-<p>Lastly, setup the new heca dsm_rdma module</p>
+Lastly, setup the new heca dsm_rdma module
 
-<div class='command'>
     modprobe dsm_rdma ip=IP port=PORT
-</div>
 
-<p>You can check that everything has been loaded correctly by running dmesg and
-checking for any errors.</p>
+You can check that everything has been loaded correctly by running dmesg and
+checking for any errors.
 
-<h2>Installing libheca</h2>
+## Installing libheca
 
-<p>While it is possible to interact with Hecatonchire Kernel directly via the
+While it is possible to interact with Hecatonchire Kernel directly via the
 exposed ioctl interface, we also provide a wrapper named libheca, exposing an
-simpler user-mode API.</p>
+simpler user-mode API.
 
-<p>
-The libheca is available from the <a href="https://github.com/hecatonchire/libheca">libheca repository</a> from github.
-This can be done by cloning the source with git using this command:
-</p>
+The libheca is available from the [libheca
+repository](https://github.com/hecatonchire/libheca) from github. This can be
+done by cloning the source with git using this command:
 
-<div class='command'>
     git clone http://github.com/hecatonchire/libheca.git
-</div>
 
-<p>Navigate to the libheca folder and build and install by running:<p>
+Navigate to the libheca folder and build and install by running:
 
-<div class='command'>
-make libheca
-</div>
+    make libheca
 
-<h2>libheca sanity test</h2>
+## libheca sanity test
 
-<p>To run a simple sanity test, navigate to the test directory under libheca.
-In the conf folder, create a configuration file with the ip address and rdma
-service nfs-kernel-server restart
-port of one or more nodes using the templates provided. To run the test, on the
-server node, run: </p> 
+To run a simple sanity test, navigate to the test directory under libheca. In
+the conf folder, create a configuration file with the ip address and rdma
+service nfs-kernel-server restart port of one or more nodes using the
+templates provided. To run the test, on the server node, run:
 
-<div class='command'>
-    ./tst &lt;conf_file&gt;
-</div>
+    ./tst <conf_file>
 
-<p>On the client node, run:</p>
+On the client node, run:
 
-<div class='command'>
-    ./tst &lt;conf_file&gt; &lt;node_id&gt;
-</div>
+    ./tst <conf_file> <node_id>
 
-<p>where with just a single client node, the node_id will be 2.</p>
+where with just a single client node, the node_id will be 2.
 
-<p>The master node needs to be initialized first, then the client. After that,
+The master node needs to be initialized first, then the client. After that,
 the onscreen numbering should be followed to demonstrate the heca system in
-action.</p>
+action.
 
-            </div>
-        </div>
-    </div>
-</body>
-</html>
