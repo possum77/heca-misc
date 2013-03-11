@@ -41,6 +41,7 @@ configure eth0 to use dhcp for internet access, eth1 for private VLAN purposed f
 ```
 vi /etc/network/interfaces
 ```
+- enter the following:
 ```
 auto eth0
 iface eth0 inet dhcp
@@ -65,6 +66,7 @@ git clone http://github.com/openstack-dev/devstack.git
 cd devstack
 vi localrc
 ```
+- enter the following:
 ```
 HOST_IP=192.168.100.101
 FLAT_INTERFACE=eth1
@@ -117,6 +119,7 @@ service apache2 restart
 ```
 vi /etc/network/interfaces
 ```
+- enter the following:
 ```
 auto eth0
 iface eth0 inet dhcp
@@ -141,6 +144,7 @@ git clone http://github.com/openstack-dev/devstack.git
 cd devstack
 vi localrc
 ```
+- enter the following:
 ```
 HOST_IP=192.168.100.102 # change IP according to compute node
 FLAT_INTERFACE=eth1
