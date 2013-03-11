@@ -198,6 +198,6 @@ nova-manage service list
 ```
   add additional flags to limit the instance deployment onto specific host by:
 ```
-nova --os-username admin --os-password <your_pass> --os-tenant-name admin --os-auth-url http://localhost:5000/v2.0 boot --image <image_id> --flavor 1 --hint force_hosts=<selected_nova_host> my-first-server
+nova --os-username admin --os-password <your_pass> --os-tenant-name admin --os-auth-url http://localhost:5000/v2.0 boot --image <image_id> --flavor 1 --availability-zone <zone>:<host> my-first-server
 ```
 
