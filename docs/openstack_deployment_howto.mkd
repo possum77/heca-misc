@@ -41,11 +41,11 @@ configure eth0 to use dhcp for internet access, eth1 for private VLAN purposed f
 ```
 vi /etc/network/interfaces
 ```
+
 - enter the following:
 ```
 auto eth0
-iface eth0 inet dhcp
-
+iface eth0 inet dhcp <br>
 auto eth1
 iface eth1 inet static
         address 192.168.100.101
@@ -123,12 +123,12 @@ vi /etc/network/interfaces
 ```
 auto eth0
 iface eth0 inet dhcp
-
 auto eth1
 iface eth1 inet static
         address 192.168.100.<host ip> 102/103/...
         netmask 255.255.255.0
 ```
+
 - prepare host for devstack installation:
 ```
 useradd -U -G sudo -s /bin/bash -m stack
