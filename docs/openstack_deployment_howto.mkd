@@ -1,4 +1,4 @@
-# Installing OpenStack cloud on ESX virtual machines
+# Installing OpenStack cloud on VMWare ESX VMs
 
 ## Requirements
 
@@ -172,6 +172,10 @@ wget --no-check-certificate https://raw.github.com/hecatonchire/heca-misc/master
 ./stack.sh
 ```
 - wait for complete and successful install just as above.
+- configure /etc/nova/nova.conf, specify the sql db connection running on the management node, edit the file and under `[DEFAULT]` add:
+```
+sql_connection=mysql://<root_user>:<os_root_pass>@<mgmt_node_internal_ip>/nova?charset=utf8
+```
 
 ## AUX
 - date must be synced on all hosts of the cloud, either via ntpd of whatever:
