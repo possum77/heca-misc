@@ -1,0 +1,213 @@
+Getting started with linux-heca and libheca
+
+The following guide will show you how to build and install the heca kernel and
+userspace library for working with it. Since typically, you will want to build
+the kernel on a separate machine from the installation machine, this guide has
+been split into a build section and a installation section. The sequences
+documented here have been tested on Ubuntu 12.04 LTS, using root permissions.
+
+On the build host
+=================
+
+Setup environment for build machine
+-----------------------------------
+
+First setup GIT:
+
+    apt-get install git-core
+
+Setup kernel build environment:
+
+    apt-get install build-essential
+    apt-get install libncurses5 libncurses5-dev
+
+Setup initrd.img related tools:
+
+    apt-get install multipath-tools kpartx arping dracut
+
+We export Build hosts' root directory via NFS, to be later used by Target hosts
+
+First install NFS server package:
+
+    apt-get install nfs-kernel-server
+    chkconfig nfsserver on
+
+Export / directory by adding the below to /etc/exports:
+
+/ *(rw)
+
+Refresh the NFS server
+
+    service nfs-kernel-server restart
+
+Build the kernel
+----------------
+First download the linux-heca repository from github, using:
+
+    git clone http://github.com/hecatonchire/linux-heca.git
+
+An optional (but recommended) step is to download the .config file from the
+following URL into the linux-heca folder to make the kernel installation
+procedure a bit easier.
+
+    wget --no-check-certificate https://raw.github.com/hecatonchire/heca-misc/master/kernel/.config
+
+Inside the linux-heca directory, to build the kernel, first run make
+menuconfig. Select any additional kernel modules to install as required.
+
+    make menuconfig
+
+Make sure you have enough free space on the disk (minimum of 20 GBs)
+
+    df -h .
+
+Invoke a parallel kernel build using all cores
+
+    make -j`nproc` all
+    make -j`nproc` headers_check
+
+Building libheca
+----------------
+
+While it is possible to interact with Hecatonchire Kernel directly via the
+exposed ioctl interface, we also provide a wrapper named libheca, exposing an
+simpler user-mode API.
+
+The libheca is available from the libheca repository from github. This can be
+done by cloning the source with git using this command:
+
+    git clone http://github.com/hecatonchire/libheca.git
+
+Setup environment so that it points to location of linux-heca
+
+    export LINUX_INCLUDE_PATH=$PWD/linux-heca/include
+
+Navigate to the libheca folder and build and install by running:
+
+    make
+
+Execution on the Target Host
+============================
+
+Setup environment on target host machine
+----------------------------------------
+
+First setup GIT:
+
+    apt-get install git-core
+
+Setup kernel debug environment:
+
+    apt-get install fakeroot build-essential crash kexec-tools
+    apt-get install makedumpfile kernel-wedge
+    apt-get install libncurses5 libncurses5-dev libelf-dev binutils-dev
+
+Add RDMA packages:
+
+    apt-get install libibverbs1 libibcm1 libibcm-dev
+    apt-get install libibverbs-dev libibcommon1 ibverbs-utils
+
+Setup permissions to access RDMA/IB devices by ensuring that file
+/etc/udev/rules.d/40-ib.rules has at-least the following lines:
+
+    KERNEL=="umad*", NAME="infiniband/%k"
+    KERNEL=="issm*", NAME="infiniband/%k"
+    KERNEL=="ucm*", NAME="infiniband/%k", MODE="0666"
+    KERNEL=="uverbs*", NAME="infiniband/%k", MODE="0666"
+    KERNEL=="uat", NAME="infiniband/%k", MODE="0666"
+    KERNEL=="ucma", NAME="infiniband/%k", MODE="0666"
+    KERNEL=="rdma_cm", NAME="infiniband/%k", MODE="0666"
+
+Setup NFS access to the Build hosts' root directory
+
+    mkdir -p /mount/builder
+    mount -t nfs builder:/ /mount/builder
+    cd /mount/builder
+
+Installing the kernel
+---------------------
+
+To install the kernel, execute the following commands (in the kernel build
+directory):
+
+    make install
+    make modules_install
+    make headers_install
+
+Create new init-RAM-disk:
+
+    make kernelrelease
+    rm -f /boot/initrd.img-`make kernelrelease`
+    dracut -l -f /boot/initrd.img-`make kernelrelease` `make kernelrelease`
+    lsinitramfs /boot/initrd.img-`make kernelrelease` | grep modules.dep
+
+Refresh GRUB bootloader entries:
+
+    update-grub2
+
+Next, reboot the machine and boot into the new kernel. And verify the new
+kernel has loaded
+
+    uname -r
+
+You will now need to setup the rdma modules. Run the following commands (or add
+them to /etc/rc.local):
+
+    modprobe rdma_cm
+    modprobe ib_uverbs
+    modprobe rdma_ucm
+
+To use with soft iWARP (requires no special RDMA configuration), load the siw
+module
+
+    modprobe siw
+
+NOTE: if you have NICs/HBAs that support RDMA (Infiniband, Iwarp, RoCE, etc..)
+you will need to configure them so they can be used with rdmacm and libibverbs
+
+Lastly, setup the new heca.ko LKM (Linux Kernel Module)
+
+    modprobe heca
+
+You can check that everything has been loaded correctly by running dmesg and
+checking for any errors.
+
+Installing libheca
+------------------
+
+Navigate to the libheca folder and build and install by running:
+
+    make install
+
+Running a libheca sanity test
+-----------------------------
+
+To run a simple sanity test, navigate to the tests directory under libheca.
+
+Create a <conf_file> using the following example:
+
+size=512
+1=<Server Node IP Address>:4444
+2=<Client Node IP Address>:4444
+
+For a SoftIWARP device you could use the IP associated with the 'eth0' device:
+
+    /sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'
+
+For InfiniBand you could use the IP associated with the 'ib0' device:
+
+    /sbin/ifconfig ib0 | grep 'inet addr:' | cut -d: -f2 | awk '{print $1}'
+
+To run the test, on the server node, run:
+
+    ./tst <conf_file>
+
+On the client node, run:
+
+    ./tst <conf_file> <node_id>
+
+Where with just a single client node, the <node_id> will be 2.
+
+The server node needs to be initialized first, then the client. After that, the
+onscreen numbering should be followed to demonstrate the heca system in action.
+
