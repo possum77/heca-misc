@@ -1,4 +1,6 @@
-Getting started with linux-heca and libheca
+                ===========================================
+                GETTING STARTED WITH linux-heca AND libheca
+                ===========================================
 
 The following guide will show you how to build and install the heca kernel and
 userspace library for working with it. Since typically, you will want to build
