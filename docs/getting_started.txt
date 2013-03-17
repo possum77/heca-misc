@@ -132,9 +132,9 @@ Installing the kernel
 To install the kernel, execute the following commands (in the kernel build
 directory):
 
-    make install
     make modules_install
     make headers_install
+    make install
 
 Create new init-RAM-disk:
 
@@ -147,8 +147,11 @@ Refresh GRUB bootloader entries:
 
     update-grub2
 
-Next, reboot the machine and boot into the new kernel. And verify the new
-kernel has loaded
+Next, reboot the machine and boot into the new kernel:
+
+    reboot
+
+And verify the new kernel has loaded
 
     uname -r
 
@@ -188,9 +191,9 @@ To run a simple sanity test, navigate to the tests directory under libheca.
 
 Create a <conf_file> using the following example:
 
-size=512
-1=<Server Node IP Address>:4444
-2=<Client Node IP Address>:4444
+    size=512
+    1=<Server Node IP Address>:4444
+    2=<Client Node IP Address>:4444
 
 For a SoftIWARP device you could use the IP associated with the 'eth0' device:
 
