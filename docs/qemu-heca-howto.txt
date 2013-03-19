@@ -1,0 +1,44 @@
+                            ===============
+                            Qemu Heca Howto
+                            ===============
+
+Build_Server
+============
+Clone from GitHub:
+    git clone http://github.com/hecatonchire/qemu-heca.git
+    cd qemu-heca
+
+Configure Qemu buid:
+    export LINUX_INCLUDE_PATH=$PWD/../linux-heca/include/
+    export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src
+    ./configure \
+        --extra-cflags="-I${LINUX_INCLUDE_PATH} -I${LIBHECA_INCLUDE_PATH}" \
+        --extra-ldflags="-L${LINUX_INCLUDE_PATH} -L${LIBHECA_INCLUDE_PATH}" \
+        --disable-werror --enable-debug
+
+Build Qemu:
+    make -j `nproc`
+
+Target_Server
+=============
+Install Qemu:
+    make install
+
+As a test payload use GParted livecd from:
+
+    http://gparted.sourceforge.net/download.php
+
+Run on master (host 10.26.100.227):
+
+    ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
+        -vnc 0.0.0.0:0 -monitor stdio -L pc-bios/  \
+        -cdrom ../images/gparted.iso -m 8G \
+        -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1073741824:1#
+
+Run on client (host 10.26.100.228):
+
+    ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
+        -vnc 0.0.0.0:0 -monitor stdio -L pc-bios/  \
+        -cdrom ../images/gparted.iso -m 8G \
+        -heca_client dsmid=1,vmid=2,master=10.26.100.227:4444:4445
+
