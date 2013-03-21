@@ -55,19 +55,25 @@ deployments.
 - enter the following:
 
     auto eth0
-    iface eth0 inet dhcp <br>
+    iface eth0 inet dhcp
+
     auto eth1
     iface eth1 inet static
             address 192.168.100.101
             netmask 255.255.255.0
 
-- prepare host for devstack installation:
+- restart networking by reloading the NIC config:
+
+    ifdown eth0; ifdown eth1
+    ifup eth0; ifup eth1
+
+- prepare host for devstack installation, start by adding a new user:
 
     useradd -U -G sudo -s /bin/bash -m stack
     echo "stack ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     su - stack
 
-- get devstack git:
+- get devstack from github:
 
     git clone http://github.com/openstack-dev/devstack.git
 
@@ -136,18 +142,24 @@ Installing a compute host
 
     auto eth0
     iface eth0 inet dhcp
+
     auto eth1
     iface eth1 inet static
-            address 192.168.100.<host ip> 102/103/...
+            address 192.168.100.[102/103/...]
             netmask 255.255.255.0
 
-- prepare host for devstack installation:
+- restart networking by reloading the NIC config:
+
+    ifdown eth0; ifdown eth1
+    ifup eth0; ifup eth1
+
+- prepare host for devstack installation, start by adding a new user `stack`:
 
     useradd -U -G sudo -s /bin/bash -m stack
     echo "stack ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     su - stack
 
-- get devstack git:
+- get devstack from github:
 
     git clone http://github.com/openstack-dev/devstack.git
 
@@ -192,7 +204,8 @@ Installing a compute host
 
 Extra settings
 ==============
-- date must be synced on all hosts of the cloud, either via ntpd of whatever:
+- date must be synced on all hosts of the cloud, either via ntpd of whatever,
+  to synch date from google use the following:
 
     sudo date -s "$(wget -S  "http://www.google.com/" 2>&1 | \
         grep -E '^[[:space:]]*[dD]ate:' | \
@@ -213,6 +226,7 @@ Use `nova-manage` for additional management commands/stats.
     nova-manage service list
 
     # add additional flags to limit the instance deployment onto specific host
+    # use <zone> as `nova` and <host> by dns name of server
     nova --os-username admin --os-password <your_pass> \
         --os-tenant-name admin --os-auth-url http://localhost:5000/v2.0 boot \
         --image <image_id> --flavor 1 --availability-zone <zone>:<host> \
