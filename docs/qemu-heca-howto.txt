@@ -59,7 +59,7 @@ Run on client (host 10.26.100.228):
 
 Setup_Post-Copy_Live_Migration
 ------------------------------
-Run on the **destination** machine (host 10.26.100.228):
+Run on the _destination_ machine (host 10.26.100.228):
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -m 1G -display vnc=:1 \
@@ -72,7 +72,7 @@ Then prepare post-copy migration:
     ...
     (qemu) heca_migrate_dest_init 10.26.100.228 10.26.100.227
 
-Run on the **source** machine (host 10.26.100.227)
+Run on the _source_ machine (host 10.26.100.227)
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -m 1G -display vnc=:1 \
