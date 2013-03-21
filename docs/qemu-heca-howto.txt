@@ -1,44 +1,86 @@
-                            ===============
-                            Qemu Heca Howto
-                            ===============
+                                ===============
+                                Qemu Heca Howto
+                                ===============
 
 Build_Server
 ============
+
+Setup environment:
+
+    apt-get install zlib1g-dev pkg-config libglib2.0-dev
+
 Clone from GitHub:
+
     git clone http://github.com/hecatonchire/qemu-heca.git
     cd qemu-heca
 
 Configure Qemu buid:
+
     export LINUX_INCLUDE_PATH=$PWD/../linux-heca/include/
-    export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src
+    export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src/
     ./configure \
+        --disable-werror --enable-debug \
         --extra-cflags="-I${LINUX_INCLUDE_PATH} -I${LIBHECA_INCLUDE_PATH}" \
         --extra-ldflags="-L${LINUX_INCLUDE_PATH} -L${LIBHECA_INCLUDE_PATH}" \
-        --disable-werror --enable-debug
+        --extra-cflags="-DDEBUG_HECA" --enable-heca
 
 Build Qemu:
+
     make -j `nproc`
 
 Target_Server
 =============
-Install Qemu:
-    make install
+
+Install_Qemu
+------------
+Go into the qemu-heca directory and then:
+
+    make -j `nproc` install
 
 As a test payload use GParted livecd from:
 
     http://gparted.sourceforge.net/download.php
 
+Setup_DSM
+---------
 Run on master (host 10.26.100.227):
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
-        -vnc 0.0.0.0:0 -monitor stdio -L pc-bios/  \
+        -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso -m 8G \
         -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1073741824:1#
 
 Run on client (host 10.26.100.228):
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
-        -vnc 0.0.0.0:0 -monitor stdio -L pc-bios/  \
+        -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso -m 8G \
         -heca_client dsmid=1,vmid=2,master=10.26.100.227:4444:4445
+
+Setup_Post-Copy_Live_Migration
+------------------------------
+Run on the **destination** machine (host 10.26.100.228):
+
+    ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
+        -m 1G -display vnc=:1 \
+        -monitor telnet:10.26.100.228:4446,server,nowait \
+        -incoming tcp:10.26.100.228:4447 
+
+Then prepare post-copy migration:
+
+    telnet 10.26.100.228 4446
+    ...
+    (qemu) heca_migrate_dest_init 10.26.100.228 10.26.100.227
+
+Run on the **source** machine (host 10.26.100.227)
+
+    ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
+        -m 1G -display vnc=:1 \
+        -monitor telnet:10.26.100.227:4446,server,nowait
+
+Then trigger post-copy (with a 2000 millisec pre-copy phase):
+
+    telnet 10.26.100.227 4446
+    ...
+    (qemu) heca_migrate tcp:10.26.100.228:4447 2000
 
