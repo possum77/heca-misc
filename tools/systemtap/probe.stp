@@ -1,0 +1,235 @@
+function my_printk (msg:string) %{ /* guru */
+         printk(
+#ifdef KERN_DEFAULT
+                 KERN_DEFAULT "[STAP_PRINTK] " "%s\n"
+#else
+                 KERN_INFO "%s\n"
+#endif
+                 , THIS->l_msg);
+%}
+
+function my_log(msg:string) {
+	my_printk(msg)
+	printf("%s\n", msg)
+}
+
+probe begin { printf("Starting probe control-c to stop\n\n"); }
+
+/* -------------------------- dsm ioctl -------------------------- */
+function ioctl_str:string (e:long) {
+	descript = 
+        (e == 0xA0) ? "HECAIOC_DSM_ADD" :
+        (e == 0xA1) ? "HECAIOC_DSM_RM" :
+        (e == 0xB0) ? "HECAIOC_SVM_ADD" :
+        (e == 0xB1) ? "HECAIOC_SVM_RM" :
+        (e == 0xC0) ? "HECAIOC_MR_ADD" :
+        (e == 0xD0) ? "HECAIOC_PS_PUSHBACK" :
+        (e == 0xD1) ? "HECAIOC_PS_UNMAP" :
+		"HECAIOC_???"
+    return descript;
+}
+
+probe module("heca").function("heca_ioctl") {
+	ctl = $ioctl & 0xFF
+	ctls = ioctl_str(ctl)
+	s = sprintf("heca_ioctl(ioctl=%x; ctl=%s)", $ioctl, ctls)
+	my_log(s)
+	s= sprintf("parameters: %s", $$parms)
+	my_log(s)
+	s = sprintf("local variables: %s", $$locals)
+	my_log(s)
+    printf("\n")
+}
+
+/*
+probe module("dsm_rdma").function("*") {
+	s = sprintf("%s(%s) -> begin", probefunc(), $$parms)
+	my_log(s)
+}
+
+probe module("dsm_rdma").function("*").return {
+	s = sprintf("%s(%s) -> return(%s)", probefunc(), $$parms, $$return)
+	my_log(s)
+}
+*/
+
+/* -------------------------- dsm protocol -------------------------- */
+/*
+function rdma_cm_event_str:string (e:long) {
+	descript = 
+        (e == 0x0) ? "RDMA_CM_EVENT_ADDR_RESOLVED" :
+		(e == 0x1) ? "RDMA_CM_EVENT_ADDR_ERROR" :
+		(e == 0x2) ? "RDMA_CM_EVENT_ROUTE_RESOLVED" :
+		(e == 0x3) ? "RDMA_CM_EVENT_ROUTE_ERROR" :
+		(e == 0x4) ? "RDMA_CM_EVENT_CONNECT_REQUEST" :
+		(e == 0x5) ? "RDMA_CM_EVENT_CONNECT_RESPONSE" :
+		(e == 0x6) ? "RDMA_CM_EVENT_CONNECT_ERROR" :
+		(e == 0x7) ? "RDMA_CM_EVENT_UNREACHABLE" :
+		(e == 0x8) ? "RDMA_CM_EVENT_REJECTED" :
+		(e == 0x9) ? "RDMA_CM_EVENT_ESTABLISHED" :
+		(e == 0xa) ? "RDMA_CM_EVENT_DISCONNECTED" :
+		(e == 0xb) ? "RDMA_CM_EVENT_DEVICE_REMOVAL" :
+		(e == 0xc) ? "RDMA_CM_EVENT_MULTICAST_JOIN" :
+		(e == 0xd) ? "RDMA_CM_EVENT_MULTICAST_ERROR" :
+		(e == 0xe) ? "RDMA_CM_EVENT_ADDR_CHANGE" :
+		(e == 0xf) ? "RDMA_CM_EVENT_TIMEWAIT_EXIT" :
+		"RDMA_CM_EVENT_???"
+    return descript;
+}
+
+probe module("dsm_rdma").function("server_event_handler") {
+	name = "server_event_handler"
+    descript = rdma_cm_event_str($event->event)
+    s = sprintf("%s (event=%s)", name, descript)
+    my_log(s)
+    s = sprint_stack(backtrace())
+    my_log(s)
+}
+
+probe module("dsm_rdma").function("client_event_handler") {
+	name = "client_event_handler"
+    descript = rdma_cm_event_str($event->event)
+    s = sprintf("%s (event=%s)", name, descript)
+    my_log(s)
+    s = sprint_stack(backtrace())
+    my_log(s)
+}
+
+function page_event_str:string (e:long) {
+	descript = 
+        (e == 0x0001) ? "REQUEST_PAGE" :
+        (e == 0x0002) ? "REQUEST_PAGE_PULL" :
+        (e == 0x0004) ? "PAGE_REQUEST_REPLY" :
+        (e == 0x0008) ? "PAGE_REQUEST_REDIRECT" :
+        (e == 0x0010) ? "PAGE_INFO_UPDATE" :
+        (e == 0x0020) ? "TRY_REQUEST_PAGE" :
+        (e == 0x0040) ? "TRY_REQUEST_PAGE_FAIL" :
+        (e == 0x0080) ? "SVM_STATUS_UPDATE" :
+        (e == 0x0100) ? "DSM_MSG_ERR" :
+        (e == 0x0200) ? "ACK" :
+		"BAD_PAGE_EVENT_???"
+    return descript;
+}
+
+probe module("dsm_rdma").function("dsm_recv_message_handler") {
+	name = "dsm_recv_message_handler"
+	type = page_event_str($rx_e->dsm_buf->type)
+    s = sprintf("%s (type=%s)", name, type)
+    my_log(s)
+}
+
+probe module("dsm_rdma").function("dsm_send_message_handler") {
+	name = "dsm_send_message_handler"
+	type = page_event_str($tx_buf_e->dsm_buf->type)
+    s = sprintf("%s (type=%s)", name, type)
+    my_log(s)
+}
+
+probe module("dsm_rdma").function("tx_dsm_send") {
+	name = "tx_dsm_send"
+	type = page_event_str($tx_e->dsm_buf->type)
+    s = sprintf("%s (type=%s)", name, type)
+    my_log(s)
+}
+
+function iw_cm_event_str:string (e:long) {
+	descript = 
+        (e == 1) ? "IW_CM_EVENT_CONNECT_REQUEST" :
+        (e == 2) ? "IW_CM_EVENT_CONNECT_REPLY" :
+        (e == 3) ? "IW_CM_EVENT_ESTABLISHED" :
+        (e == 4) ? "IW_CM_EVENT_DISCONNECT" :
+        (e == 5) ? "IW_CM_EVENT_CLOSE" :
+        "IW_CM_???"
+    return descript;
+}
+
+probe module("iw_cm").function("process_event") {
+	name = "iw_cm@process_event"
+    iw_event = pointer_arg(2);
+    id = @cast(iw_event, "struct iw_cm_event", "kernel<rdma/iw_cm.h>")->event
+    descript = iw_cm_event_str(id)
+    s = sprintf("%s (event=%s, code=%d)", name, descript, id)
+    my_log(s)
+}
+*/
+
+/* ---------------------------- low level com  ---------------------------- */
+/*
+probe module("ib_*").function("*") {
+	s = sprintf("%s(%s) -> begin", probefunc(), $$parms)
+	my_log(s)
+}
+
+probe module("ib_*").function("*").return {
+	s = sprintf("%s(%s) -> return(%s)", probefunc(), $$parms, $$return)
+	my_log(s)
+}
+
+probe module("iw_*").function("*") {
+	s = sprintf("%s(%s) -> begin", probefunc(), $$parms)
+	my_log(s)
+}
+
+probe module("iw_*").function("*").return {
+	s = sprintf("%s(%s) -> return(%s)", probefunc(), $$parms, $$return)
+	my_log(s)
+}
+
+probe module("rdma_*").function("*") {
+	s = sprintf("%s(%s) -> begin", probefunc(), $$parms)
+	my_log(s)
+}
+
+probe module("rdma_*").function("*").return {
+	s = sprintf("%s(%s) -> return(%s)", probefunc(), $$parms, $$return)
+	my_log(s)
+}
+*/
+
+/*
+function ib_cm_event_str:string (e:long) {
+	descript = 
+        (e == 0) ? "IB_CM_REQ_ERROR" :
+        (e == 1) ? "IB_CM_REQ_RECEIVED" :
+        (e == 2) ? "IB_CM_REP_ERROR" :
+        (e == 3) ? "IB_CM_REP_RECEIVED" :
+        (e == 4) ? "IB_CM_RTU_RECEIVED" :
+        (e == 5) ? "IB_CM_USER_ESTABLISHED" :
+        (e == 6) ? "IB_CM_DREQ_ERROR" :
+        (e == 7) ? "IB_CM_DREQ_RECEIVED" :
+        (e == 8) ? "IB_CM_DREP_RECEIVED" :
+        (e == 9) ? "IB_CM_TIMEWAIT_EXIT" :
+        (e == 10) ? "IB_CM_MRA_RECEIVED" :
+        (e == 11) ? "IB_CM_REJ_RECEIVED" :
+        (e == 12) ? "IB_CM_LAP_ERROR" :
+        (e == 13) ? "IB_CM_LAP_RECEIVED" :
+        (e == 14) ? "IB_CM_APR_RECEIVED" :
+        (e == 15) ? "IB_CM_SIDR_REQ_ERROR" :
+        (e == 16) ? "IB_CM_SIDR_REQ_RECEIVED" :
+        (e == 17) ? "IB_CM_SIDR_REP_RECEIVED" :
+        "IB_CM_???"
+    return descript;
+}
+*/
+
+/* ----------------------------------- examples ---------------------------- */
+/*
+probe module("dsm_rdma").statement("*@/usr/src/linux/drivers/dsm/dsm_ctl.c:478-548") {
+	s = sprintf("%s(): %s", probefunc(), $$locals)
+    my_log(s)
+    s = sprint_stack(backtrace())
+    my_log(s)
+}
+*/
+
+/*
+probe module("dsm_rdma").statement("*@/usr/src/linux/drivers/dsm/dsm_sr.c:284") {
+	s = sprintf("%s(): %s", probefunc(), $$locals)
+    my_log(s)
+    s = sprint_stack(backtrace())
+    my_log(s)
+	s = sprintf("norm_addr=%d = addr=%d + offset=??\n", $norm_addr,
+		$msg->req_addr)
+    my_log(s)
+}
+*/

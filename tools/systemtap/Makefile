@@ -4,6 +4,8 @@ MODULE = heca
 KERNEL_REL := $(shell uname -r)
 MODULE_FILE = /lib/modules/$(KERNEL_REL)/kernel/drivers/$(MODULE)/$(MODULE).ko
 
+CLEAN += $(MYROOT)
+
 all: stap
 
 ELF_PKG = elfutils-0.153
@@ -20,6 +22,8 @@ CLEAN += $(ELF_PKG) $(ELF_TGZ)
 STAP_PKG = systemtap-1.8
 STAP_TGZ := $(STAP_PKG).tar.gz
 STAP_URL := http://sourceware.org/systemtap/ftp/releases/$(STAP_TGZ)
+
+CLEAN += $(STAP_PKG) $(STAP_TGZ)
 
 systemtap:
 	rm -rf $(STAP_PKG) $(STAP_TGZ) $(MYROOT)

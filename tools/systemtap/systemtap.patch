@@ -1,0 +1,11 @@
+--- old/runtime/staprun/staprun.h	2012-07-30 19:58:58.000000000 +0300
++++ new/runtime/staprun/staprun.h	2012-07-30 19:54:56.000000000 +0300
+@@ -28,7 +28,7 @@
+ #include <sys/poll.h>
+ #include <pthread.h>
+ #include <sys/socket.h>
+-#include <linux/types.h>
++#include <asm/types.h>
+ #include <linux/limits.h>
+ #include <sys/wait.h>
+ #include <sys/statfs.h>
