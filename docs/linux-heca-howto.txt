@@ -47,6 +47,8 @@ Build the kernel
 First download the linux-heca repository from github, using:
 
     git clone http://github.com/hecatonchire/linux-heca.git
+    cd heca-heca
+    git checkout <branch>
 
 An optional (but recommended) step is to download the .config file from the
 following URL into the linux-heca folder to make the kernel installation
@@ -66,7 +68,10 @@ Make sure you have enough free space on the disk (minimum of 20 GBs)
 Invoke a parallel kernel build using all cores
 
     make -j`nproc` all
-    make -j`nproc` headers_check
+
+Fixup permissions to support 'make headers_install' from read-only mount
+
+    chmod -R a+wr .
 
 Building libheca
 ----------------
@@ -79,6 +84,8 @@ The libheca is available from the libheca repository from github. This can be
 done by cloning the source with git using this command:
 
     git clone http://github.com/hecatonchire/libheca.git
+    cd libheca
+    git checkout <branch>
 
 Setup environment so that it points to location of linux-heca
 
