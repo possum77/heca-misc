@@ -24,7 +24,7 @@ Clone from GitHub:
 
 Configure Qemu buid:
 
-    export LINUX_INCLUDE_PATH=$PWD/../linux-heca/include
+    export LINUX_INCLUDE_PATH=$PWD/../linux-heca/usr/include
     export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src
     ./configure \
         --disable-werror --enable-debug \
