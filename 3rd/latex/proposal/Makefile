@@ -37,7 +37,7 @@ EXTRA_FILES := \
 	forCTAN/proposal/base/pdata.sty \
 
 macros_download: macros_clean
-	svn checkout https://svn.kwarc.info/repos/kwarc/doc/macros
+	tar xvfz macros.tgz
 
 .PHONY: macros_download
 
@@ -65,15 +65,14 @@ prop_diff:
 .PHONY: prop_diff
 
 prop_download: prop_clean
-	$(WGET) $(PROP_URL)
 	unzip $(PROP_ZIP)
 	patch -p0 < $(PROP_DIR).patch
 
 .PHONY: prop_download
 
 prop_clean:
-	chmod a+w $(PROP_DIR) $(PROP_ZIP)
-	rm -rf $(PROP_DIR) $(PROP_ZIP)
+	chmod a+w $(PROP_DIR)
+	rm -rf $(PROP_DIR)
 
 .PHONY: prop_clean
 
