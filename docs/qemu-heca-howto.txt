@@ -24,12 +24,17 @@ Clone from GitHub:
 
 Configure Qemu buid:
 
-    export LINUX_INCLUDE_PATH=$PWD/../linux-heca/usr/include
+    export LINUX_INCLUDE_PATH=$PWD/../linux-heca/include
+    export LINUX_USR_INCLUDE_PATH=$PWD/../linux-heca/usr/include
     export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src
     ./configure \
         --disable-werror --enable-debug \
-        --extra-cflags="-I${LINUX_INCLUDE_PATH} -I${LIBHECA_INCLUDE_PATH}" \
-        --extra-ldflags="-L${LINUX_INCLUDE_PATH} -L${LIBHECA_INCLUDE_PATH}" \
+        --extra-cflags="-I${LINUX_INCLUDE_PATH}" \
+        --extra-cflags="-I${LINUX_USR_INCLUDE_PATH}" \
+        --extra-cflags="-I${LIBHECA_INCLUDE_PATH}" \
+        --extra-ldflags="-L${LINUX_INCLUDE_PATH}" \
+        --extra-ldflags="-L${LINUX_USR_INCLUDE_PATH}" \
+        --extra-ldflags="-L${LIBHECA_INCLUDE_PATH}" \
         --extra-cflags="-DDEBUG_HECA" --enable-heca
 
 Build Qemu:
@@ -51,7 +56,7 @@ As a test payload use GParted livecd from:
 
 Setup_DSM
 ---------
-Run on master (host 10.26.100.227):
+Run on master (host 10.26.100.227), using 1GB remote memory:
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -vnc :1 -monitor stdio -L pc-bios/  \
