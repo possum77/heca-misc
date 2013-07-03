@@ -60,14 +60,16 @@ Run on master (host 10.26.100.227), using 1GB remote memory:
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -vnc :1 -monitor stdio -L pc-bios/  \
-        -cdrom ../images/gparted.iso -m 8G \
+        -cdrom ../images/gparted.iso \
+        -m 8G \
         -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1073741824:1#
 
 Run on client (host 10.26.100.228):
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -vnc :1 -monitor stdio -L pc-bios/  \
-        -cdrom ../images/gparted.iso -m 8G \
+        -cdrom ../images/gparted.iso \
+        -m 8G \
         -heca_client dsmid=1,vmid=2,master=10.26.100.227:4444:4445
 
 Setup_Post-Copy_Live_Migration
@@ -76,6 +78,7 @@ Run on the _destination_ machine (host 10.26.100.228):
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -m 1G -display vnc=:1 \
+        -cdrom ../images/gparted.iso \
         -monitor telnet:10.26.100.228:4446,server,nowait \
         -incoming tcp:10.26.100.228:4447 
 
@@ -89,6 +92,7 @@ Run on the _source_ machine (host 10.26.100.227)
 
     ./x86_64-softmmu/qemu-system-x86_64 -smp `nproc` \
         -m 1G -display vnc=:1 \
+        -cdrom ../images/gparted.iso \
         -monitor telnet:10.26.100.227:4446,server,nowait
 
 Then trigger post-copy (with a 2000 millisec pre-copy phase):
