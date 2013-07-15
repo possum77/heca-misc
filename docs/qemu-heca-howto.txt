@@ -29,6 +29,7 @@ Configure Qemu buid:
     export LIBHECA_INCLUDE_PATH=$PWD/../libheca/src
     ./configure \
         --disable-werror --enable-debug \
+        --enable-trace-backend=stderr \
         --extra-cflags="-I${LINUX_INCLUDE_PATH}" \
         --extra-cflags="-I${LINUX_USR_INCLUDE_PATH}" \
         --extra-cflags="-I${LIBHECA_INCLUDE_PATH}" \
@@ -40,6 +41,11 @@ Configure Qemu buid:
 Build Qemu:
 
     make -j `nproc`
+
+Debug Qemu:
+
+    gdb> handle SIGUSR1 noprint
+    gdb> handle SIGUSR1 nostop
 
 Target_Server
 =============
