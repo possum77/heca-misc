@@ -47,7 +47,7 @@ Build the kernel
 First download the linux-heca repository from github, using:
 
     git clone http://github.com/hecatonchire/linux-heca.git
-    cd heca-heca
+    cd linux-heca
     git checkout <branch>
 
 An optional (but recommended) step is to download the .config file from the
@@ -57,7 +57,8 @@ procedure a bit easier.
     wget --no-check-certificate https://raw.github.com/hecatonchire/heca-misc/master/kernel/.config
 
 Inside the linux-heca directory, to build the kernel, first run make
-menuconfig. Select any additional kernel modules to install as required.
+menuconfig. Make sure that NFS4 support is selected.
+Select any additional kernel modules to install as required.
 
     make menuconfig
 
@@ -115,6 +116,9 @@ Add RDMA packages:
 
     apt-get install libibverbs1 libibcm1 libibcm-dev
     apt-get install libibverbs-dev libibcommon1 ibverbs-utils
+
+Install NFS client package:
+    apt-get install nfs-common
 
 Setup permissions to access RDMA/IB devices by ensuring that file
 /etc/udev/rules.d/40-ib.rules has at-least the following lines:
