@@ -60,7 +60,7 @@ Setup environment:
 
     apt-get install libpng12-0 libpng12-dev libpng++-dev libpng3 libtool
 
-    wget http://cairographics.org/releases/pixman-0.28.2.tar.gz
+    wget http://cairographics.org/releases/pixman-0.30.0.tar.gz
     tar xvfz pixman*
     cd pixman*
     ./configure
