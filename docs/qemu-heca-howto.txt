@@ -7,9 +7,9 @@ Build_Server
 
 Setup environment:
 
-    ap-tget install zlib1g-dev pkg-config libglib2.0-dev
+    apt-get install zlib1g-dev pkg-config libglib2.0-dev
 
-    wget http://cairographics.org/releases/pixman-0.28.2.tar.gz
+    wget http://cairographics.org/releases/pixman-0.30.0.tar.gz
     tar xvfz pixman*
     cd pixman*
     ./configure
