@@ -42,6 +42,10 @@ Build Qemu:
 
     make -j `nproc`
 
+Fix file permissions in order to be able to install qemu-heca on the target machine:
+    
+    sudo find . \( -name '*.o' -o -name '*.d' -o \( -name 'qemu-*' -a -not -name '*.*' \) \) -exec chmod 777 {} \;
+
 Debug Qemu:
 
     gdb> handle SIGUSR1 noprint
@@ -52,6 +56,17 @@ Target_Server
 
 Install_Qemu
 ------------
+Setup environment:
+
+    apt-get install libpng12-0 libpng12-dev libpng++-dev libpng3 libtool
+
+    wget http://cairographics.org/releases/pixman-0.30.0.tar.gz
+    tar xvfz pixman*
+    cd pixman*
+    ./configure
+    make
+    make install
+
 Go into the qemu-heca directory and then:
 
     make -j `nproc` install
@@ -68,7 +83,7 @@ Run on master (host 10.26.100.227), using 1GB remote memory:
         -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso \
         -m 8G \
-        -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1073741824:1#
+        -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1G:1#
 
 Run on client (host 10.26.100.228):
 
