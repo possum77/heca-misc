@@ -83,7 +83,7 @@ Run on master (host 10.26.100.227), using 1GB remote memory:
         -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso \
         -m 8G \
-        -heca_master dsmid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1G:1#
+        -heca_master hspaceid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1G:1#
 
 Run on client (host 10.26.100.228):
 
@@ -91,7 +91,7 @@ Run on client (host 10.26.100.228):
         -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso \
         -m 8G \
-        -heca_client dsmid=1,vmid=2,master=10.26.100.227:4444:4445
+        -heca_client hspaceid=1,vmid=2,master=10.26.100.227:4444:4445
 
 Setup_Post-Copy_Live_Migration
 ------------------------------
