@@ -9,7 +9,7 @@ Setup environment:
 
     apt-get install zlib1g-dev pkg-config libglib2.0-dev
 
-    wget http://cairographics.org/releases/pixman-0.28.2.tar.gz
+    wget http://cairographics.org/releases/pixman-0.30.0.tar.gz
     tar xvfz pixman*
     cd pixman*
     ./configure
@@ -83,10 +83,14 @@ Run on master (host 10.26.100.227), using 1GB remote memory:
         -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso \
         -m 8G \
+<<<<<<< HEAD
         -heca hspaceid=1,mode=master \
         -hecaproc hprocid=1,ip=10.26.100.227,port=4444,tcp_port=4445 \
         -hecaproc hprocid=2,ip=10.26.100.228,port=4444,tcp_port=4445 \
         -hecamr start=0,size=1G,hprocids=1
+=======
+        -heca_master hspaceid=1,vminfo=1:10.26.100.227:4444:4445#2:10.26.100.228:4444:4445#,mr=0:1G:1#
+>>>>>>> public/dev
 
 Run on client (host 10.26.100.228):
 
@@ -94,7 +98,11 @@ Run on client (host 10.26.100.228):
         -vnc :1 -monitor stdio -L pc-bios/  \
         -cdrom ../images/gparted.iso \
         -m 8G \
+<<<<<<< HEAD
         -heca hspaceid=1,mode=client,hprocid=2,masterip=10.26.100.227,port=4444,tcp_port=4445
+=======
+        -heca_client hspaceid=1,vmid=2,master=10.26.100.227:4444:4445
+>>>>>>> public/dev
 
 Setup_Post-Copy_Live_Migration
 ------------------------------
