@@ -1,0 +1,83 @@
+The proof of concept heca-enabled nova implementation consists of two parts:
+
+- An addition to pass paratmers directly to qemu-kvm by use of the qemu:commandline xml tag. This part 
+
+has "nearly" release quality
+- A proof-of concept to autmatically deploy heca pairs of vms to share memory. This is a proof of 
+
+concept and needs re-work.
+
+All changes are tagged in the source with #Petter
+
+Qemu-commandline addition
+---------------------------------------
+Usage:
+
+Pass the paramters you want to forward to qemu to the nova pythonclient using the --qemu-commandline 
+
+tag.
+
+Example, to boot a heca master:
+
+>nova boot --image=f9db00d5-611a-437f-992f-56dd43fd56f3 --flavor=2 --qemu-commandline="-heca 
+
+hspaceid=1,mode=master -hecamr start=0,size=1G,hprocids=1 -hecaproc 
+
+hprocid=1,ip=10.26.100.227,port=4444,tcp_port=4445 -hecaproc 
+
+hprocid=2,ip=10.26.100.228,port=4444,tcp_port=4445" apserver
+
+Implementation:
+The python-novaclient is modified to accept the --qemu-commandline tag and pass it via the rest 
+
+interface to the nova compute API. The nova compute API is modified to accept this parameter, store it 
+
+in the instance table in the nova db and when constructing the instance xml, add it. The correct qemu 
+
+namesmapce tag is also added to the instance xml. Hypervisor type in nova.conf must be qemu. 
+
+
+VM split addition
+---------------------------------------
+Usage:
+
+Add the following extra-specs to a nova flvaor: "heca=enabled" using this command:
+
+>nova-manage flavor set_key --name xxx --key heca --value enabled
+
+If the VM requests more memory than is available on one single host, the compute API will try to 
+
+provision two VM:s instead, one hca master and one heca client. 
+
+
+Implementation:
+If the heca key is set on the flavor, the compute api queries the host manager to see how much RAM is 
+
+available at each compute node. If the VM wont fit, the compute api finds the hosts with the most and 
+
+secondmost amount of available RAM. It then creates scheduler hints to deploy the client to the host 
+
+with the most RAM and creates the master on the host with the secondmost amount of available RAM. The 
+
+qemu:commandline paramters are autmatically set up to provision the VMs correctly as a heca pair. the 
+
+address of the IB adapters of the hosts are stored in the compute-node table.
+
+Drawbacks/TODO
+* The compute API really shouldnt do the scheduling as it does now. Instead, a new scheduler should be 
+
+created to handle this. The problem is that the instance ID is created before the VM is sent to the 
+
+scheduler meaning that it is hard to split the VM since we're lacking an ID but thera are ways around 
+
+this. 
+
+* Ideally, there shouldnt be a mutual dependency between the master and client, i.e.the master needs 
+
+to know the clients IP and the clients the masters. This will have to be addressed in the underlying 
+
+software though.
+
+* Management and memory transfer ports are hard-coded. Hprocid is hard coded.
+
+* The IB ip should be stored in the host state table and retrieved from the virtualization driver.
